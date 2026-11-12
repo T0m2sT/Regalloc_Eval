@@ -1,0 +1,20 @@
+{
+ "task": "spill_cliques_uniform",
+ "family": "spill",
+ "aspect": "overlapping cliques (hitting-set structure)",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 1,
+ "date": "2026-11-02",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 772,
+  "output": 7076
+ },
+ "prompt": "A compiler's register allocator has this interference graph: 24 live ranges numbered 0..23, and the machine has k=4 registers (colors 0..3). Adjacent nodes must get different colors.\nEdges: [[0, 8], [0, 11], [0, 15], [0, 22], [1, 4], [1, 7], [1, 14], [1, 16], [1, 22], [2, 5], [2, 10], [2, 11], [2, 13], [2, 19], [2, 20], [2, 22], [3, 7], [3, 9], [3, 13], [3, 22], [4, 5], [4, 11], [4, 13], [4, 16], [4, 20], [5, 10], [5, 11], [5, 13], [5, 16], [5, 20], [5, 22], [7, 9], [7, 12], [7, 13], [7, 14], [7, 15], [7, 16], [7, 22], [7, 23], [8, 11], [8, 14], [8, 15], [8, 22], [9, 13], [9, 20], [9, 22], [10, 20], [10, 22], [11, 13], [11, 15], [11, 16], [11, 19], [11, 20], [11, 22], [12, 15], [12, 22], [12, 23], [13, 19], [13, 20], [13, 22], [14, 16], [14, 21], [14, 22], [15, 22], [15, 23], [16, 20], [16, 22], [17, 18], [18, 19], [19, 20], [20, 22], [22, 23]]\nSpill cost per node (index = node): [4, 3, 9, 5, 3, 3, 1, 8, 1, 4, 9, 6, 4, 3, 4, 6, 7, 4, 5, 5, 1, 3, 5, 7]\nChoose which nodes to spill so the remaining nodes can be properly colored with k registers, minimizing the TOTAL spill cost. Optimality is required: any cheaper valid solution beats yours.\nFinal answer: end your reply with a single JSON object in a ```json block: {\"spilled\": [node, ...], \"coloring\": {\"node\": color, ...}}. Spilling a node removes it from the graph entirely. 'coloring' must give a color in 0..k-1 for every non-spilled node (JSON keys are node numbers as strings).",
+ "response": "## Approach\n\n**Find the hard cliques.** Nodes {2, 5, 11, 13, 20, 22} are pairwise adjacent, so they form a 6-clique. With k=4, at least two of them must be spilled. Two more 5-cliques also constrain the choice: {3, 7, 9, 13, 22} and {7, 12, 15, 22, 23}. Each needs at least one spill.\n\n**Lower bound on cost.**\n- The 6-clique needs two spills. The cheapest pairs are {20, 5} (cost 4), {20, 13} (cost 4), and {20, 22} (cost 8).\n- {20, 13} leaves the clique {7, 12, 15, 22, 23} uncovered, so one more spill is needed. The cheapest is node 12 (cost 4), for a total of 8.\n- {20, 22} covers the 6-clique and both 5-cliques at a total cost of 8.\n- Other combinations I checked (for example {5, 13} plus node 12, or {20, 5} plus extra spills) cost 10 or more.\n\nSo the minimum total spill cost is 8. I chose to spill {20, 22}.\n\n**Coloring the remaining graph.** After removing 20 and 22, I colored greedily with backtracking where needed. Node 8 initially had no free color, so I recolored 7, 14, 15 and downstream nodes. The resulting coloring was checked against every remaining edge; no conflicts were found. Node 6 is isolated, and node 21 has only neighbour 14, so both are easy to color.\n\n**Verification.** Every edge between two non-spilled nodes was checked and has different colors. The spill cost is 1 (node 20) + 7 (node 22) = 8.\n\n## Answer\n\nSpilled nodes {20, 22} with total cost 8. The coloring below uses colors 0\u20133 and assigns every non-spilled node.\n\n```json\n{\"spilled\": [20, 22], \"coloring\": {\"0\": 3, \"1\": 0, \"2\": 3, \"3\": 0, \"4\": 3, \"5\": 2, \"6\": 0, \"7\": 3, \"8\": 1, \"9\": 2, \"10\": 0, \"11\": 0, \"12\": 0, \"13\": 1, \"14\": 2, \"15\": 2, \"16\": 1, \"17\": 1, \"18\": 0, \"19\": 2, \"21\": 0, \"23\": 1}}\n```",
+ "score": 1.0,
+ "passed": true,
+ "note": "valid, cost 6 vs optimal 6"
+}

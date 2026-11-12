@@ -1,0 +1,20 @@
+{
+ "task": "live_loops_dense",
+ "family": "liveness",
+ "aspect": "many back edges, more variables",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 1,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 678,
+  "output": 20663
+ },
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  k = 1\n  h = k + j\n  b = d + j\n  k = l + e\n  if d goto B1 else B3\nB1:\n  g = 1\n  c = i + 1\n  b = 1\n  j = e + h\n  a = c + 1\n  if f goto B2 else B0\nB2:\n  f = c + h\n  e = 1\n  a = b + f\n  f = g + e\n  if b goto B3 else B1\nB3:\n  c = h + d\n  e = h + d\n  b = 1\n  if k goto B4 else B0\nB4:\n  j = k + j\n  d = e + 1\n  h = l + d\n  d = c + i\n  b = 1\n  if k goto B5 else B1\nB5:\n  g = d + 1\n  j = h + e\n  k = a + 1\n  if l goto B6 else B2\nB6:\n  h = c + 1\n  a = b + 1\n  a = j + d\n  j = a + 1\n  if i goto B7 else B1\nB7:\n  c = h + j\n  g = a + b\n  h = i + 1\n  f = 1\n  if d goto B8 else B5\nB8:\n  k = j + b\n  f = 1\n  d = g + c\n  ret f\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names.",
+ "response": "## Approach\n\nI computed liveness by backward dataflow, with each block's live-out including the uses of its terminator. The fixpoint was reached after two passes. For every definition `x = ...`, I took the live-after set at that instruction and added an edge from `x` to each member other than `x`.\n\n**Liveness at block entry (fixpoint):**\n- B0: {a,d,e,f,i,j,l}\n- B1: {d,e,f,h,i,k,l}\n- B2: {b,c,d,g,h,i,j,k,l}\n- B3: {a,d,f,h,i,j,k,l}\n- B4: {a,c,e,f,i,j,k,l}\n- B5: {a,b,c,d,e,f,h,i,l}\n- B6: {b,c,d,e,f,i,j,k,l}\n- B7: {a,b,d,e,h,i,j,l}\n- B8: {b,c,g,j}\n\n**Observations:**\n- `i` and `l` are never defined, so they produce no edges of their own. They appear only as live variables at definitions of other variables.\n- The defined variables are a, b, c, d, e, f, g, h, j, k. Every pair among them interferes.\n- Each of i and l interferes with all ten defined variables, but not with each other.\n\nThis gives 45 edges among the ten defined variables, plus 10 for i and 10 for l, for 65 edges in total.\n\n```json\n{\"edges\": [[\"a\",\"b\"],[\"a\",\"c\"],[\"a\",\"d\"],[\"a\",\"e\"],[\"a\",\"f\"],[\"a\",\"g\"],[\"a\",\"h\"],[\"a\",\"j\"],[\"a\",\"k\"],[\"b\",\"c\"],[\"b\",\"d\"],[\"b\",\"e\"],[\"b\",\"f\"],[\"b\",\"g\"],[\"b\",\"h\"],[\"b\",\"j\"],[\"b\",\"k\"],[\"c\",\"d\"],[\"c\",\"e\"],[\"c\",\"f\"],[\"c\",\"g\"],[\"c\",\"h\"],[\"c\",\"j\"],[\"c\",\"k\"],[\"d\",\"e\"],[\"d\",\"f\"],[\"d\",\"g\"],[\"d\",\"h\"],[\"d\",\"j\"],[\"d\",\"k\"],[\"e\",\"f\"],[\"e\",\"g\"],[\"e\",\"h\"],[\"e\",\"j\"],[\"e\",\"k\"],[\"f\",\"g\"],[\"f\",\"h\"],[\"f\",\"j\"],[\"f\",\"k\"],[\"g\",\"h\"],[\"g\",\"j\"],[\"g\",\"k\"],[\"h\",\"j\"],[\"h\",\"k\"],[\"j\",\"k\"],[\"i\",\"a\"],[\"i\",\"b\"],[\"i\",\"c\"],[\"i\",\"d\"],[\"i\",\"e\"],[\"i\",\"f\"],[\"i\",\"g\"],[\"i\",\"h\"],[\"i\",\"j\"],[\"i\",\"k\"],[\"l\",\"a\"],[\"l\",\"b\"],[\"l\",\"c\"],[\"l\",\"d\"],[\"l\",\"e\"],[\"l\",\"f\"],[\"l\",\"g\"],[\"l\",\"h\"],[\"l\",\"j\"],[\"l\",\"k\"]]}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "exact edge set"
+}

@@ -1,0 +1,20 @@
+{
+ "task": "pre_cliques",
+ "family": "precolored",
+ "aspect": "precolored + overlapping cliques",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 0,
+ "date": "2026-11-02",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 867,
+  "output": 4867
+ },
+ "prompt": "A compiler's register allocator has this interference graph: 26 live ranges numbered 0..25, and the machine has k=4 registers (colors 0..3). Adjacent nodes must get different colors.\nEdges: [[1, 2], [1, 3], [1, 6], [1, 8], [1, 9], [1, 11], [1, 12], [1, 14], [1, 17], [1, 18], [1, 22], [1, 25], [2, 3], [2, 4], [2, 14], [2, 18], [2, 21], [2, 22], [2, 24], [3, 5], [3, 11], [3, 18], [3, 22], [4, 21], [4, 22], [4, 24], [5, 7], [5, 9], [5, 12], [5, 13], [5, 19], [5, 22], [6, 9], [6, 12], [6, 14], [7, 8], [7, 9], [7, 12], [7, 13], [7, 22], [8, 9], [8, 11], [8, 12], [8, 17], [8, 18], [8, 19], [8, 22], [8, 24], [8, 25], [9, 11], [9, 12], [9, 13], [9, 14], [9, 19], [9, 22], [9, 24], [10, 12], [11, 19], [11, 21], [11, 22], [11, 24], [11, 25], [12, 14], [12, 17], [12, 22], [13, 22], [17, 18], [17, 20], [17, 22], [18, 22], [19, 24], [20, 22], [21, 22], [21, 24], [22, 24], [22, 25]]\nSpill cost per node (index = node): [1, 7, 9, 6, 4, 7, 5, 5, 11, 14, 1, 10, 11, 3, 5, 1, 1, 6, 8, 6, 2, 6, 12, 1, 6, 4]\nPrecolored nodes (fixed by the calling convention; they must keep this color and cannot be spilled): {\"14\": 0, \"5\": 2, \"15\": 2, \"9\": 1, \"4\": 1}\nChoose which nodes to spill so the remaining nodes can be properly colored with k registers, minimizing the TOTAL spill cost. Optimality is required: any cheaper valid solution beats yours.\nFinal answer: end your reply with a single JSON object in a ```json block: {\"spilled\": [node, ...], \"coloring\": {\"node\": color, ...}}. Spilling a node removes it from the graph entirely. 'coloring' must give a color in 0..k-1 for every non-spilled node (JSON keys are node numbers as strings).",
+ "response": "## Approach\n\n**Step 1: Find forced spills from K5 cliques.** With k=4, any 5 mutually adjacent nodes need a spill. Several such cliques exist:\n\n- {1, 8, 11, 22, 25} and {1, 8, 9, 11, 22}: node 1 (cost 1) hits both, and it is the cheapest option. **Spill 1.**\n- {8, 9, 11, 22, 24} and {8, 9, 11, 19, 24}: node 9 is precolored and cannot be spilled. The cheapest hitting sets are {11, 24} (cost 16), {19, 22} (18), {8, 24} (17), and {8, 11} (21). Take **{11, 24}** (cost 16).\n- {5, 7, 9, 13, 22} and {5, 7, 9, 12, 22}: nodes 5 and 9 are precolored. Node 7 (cost 5) hits both, which is cheaper than alternatives such as {13, 12} (cost 14) or 22 (cost 12). **Spill 7.**\n\nLower bound from these constraints: 1 + 16 + 5 = 22.\n\n**Step 2: Color the remaining 22 nodes.** Using the precolored nodes (14\u21920, 9\u21921, 4\u21921, 5\u21922) and greedy assignment with 22\u21920, I obtained:\n\n- 0: 14, 22, 19, 10\n- 1: 9, 4, 17, 25, 3\n- 2: 5, 8, 6, 20, 2\n- 3: 12, 13, 18, 21\n\nI checked every edge among the non-spilled nodes, and no two adjacent nodes share a color. Node 15 has no edges, so it keeps its precolor 2.\n\n**Total spill cost:** 1 + 10 + 6 + 5 = 22, which matches the lower bound, so this is optimal.\n\nSpilled nodes: 1, 7, 11, 24.\n\n```json\n{\"spilled\": [1, 7, 11, 24], \"coloring\": {\"2\": 2, \"3\": 1, \"4\": 1, \"5\": 2, \"6\": 2, \"8\": 2, \"9\": 1, \"10\": 0, \"12\": 3, \"13\": 3, \"14\": 0, \"15\": 2, \"17\": 1, \"18\": 3, \"19\": 0, \"20\": 2, \"21\": 3, \"22\": 0, \"25\": 1}}\n```",
+ "score": 0.8571428571428571,
+ "passed": false,
+ "note": "valid, cost 28 vs optimal 24"
+}

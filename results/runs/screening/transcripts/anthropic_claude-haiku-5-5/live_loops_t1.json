@@ -1,0 +1,20 @@
+{
+ "task": "live_loops",
+ "family": "liveness",
+ "aspect": "many back edges",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 1,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 661,
+  "output": 12809
+ },
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  d = j + b\n  g = 1\n  e = 1\n  a = d + 1\n  if c goto B1 else B3\nB1:\n  g = e + 1\n  f = j + 1\n  i = g + a\n  g = f + a\n  i = i + 1\n  if h goto B2 else B4\nB2:\n  g = i + 1\n  g = f + 1\n  g = 1\n  e = c + j\n  e = i + d\n  if f goto B3 else B5\nB3:\n  h = 1\n  d = g + 1\n  b = d + a\n  i = 1\n  j = b + g\n  if d goto B4 else B1\nB4:\n  e = c + 1\n  h = 1\n  j = b + a\n  j = g + c\n  if f goto B5 else B7\nB5:\n  f = a + j\n  d = j + c\n  a = d + 1\n  e = 1\n  goto B6\nB6:\n  h = 1\n  d = j + h\n  j = a + d\n  e = i + 1\n  f = i + 1\n  if j goto B7 else B3\nB7:\n  e = 1\n  b = 1\n  b = 1\n  i = 1\n  ret f\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names.",
+ "response": "The interference graph is the complete graph on the ten variables a through j: all 45 pairs interfere.\n\n**Liveness (live-in sets, key blocks):**\n- B7: {f}\n- B6: {a, c, g, i, j}\n- B5: {a, c, g, i, j}\n- B4: {a, b, c, f, g, i}\n- B3: {a, c, e, f, g}\n- B2: {a, c, d, f, i, j}\n- B1: {a, b, c, d, e, h, j}\n- B0: live-out is {a, b, c, d, e, f, g, h, j}\n\n**Interference:** For each defining instruction, I took the live-after set and added an edge to every other variable in it. Across all blocks, every pair among {a, b, c, d, e, f, g, h, i, j} appears. For example, in B3 `j = b + g` has live-after containing all of a\u2013i, and in B2 `g = 1` has live-after containing a, c, d, f, i, j. The remaining pairs are picked up by the other blocks, so no pair is missing.\n\n```json\n{\"edges\": [[\"a\",\"b\"],[\"a\",\"c\"],[\"a\",\"d\"],[\"a\",\"e\"],[\"a\",\"f\"],[\"a\",\"g\"],[\"a\",\"h\"],[\"a\",\"i\"],[\"a\",\"j\"],[\"b\",\"c\"],[\"b\",\"d\"],[\"b\",\"e\"],[\"b\",\"f\"],[\"b\",\"g\"],[\"b\",\"h\"],[\"b\",\"i\"],[\"b\",\"j\"],[\"c\",\"d\"],[\"c\",\"e\"],[\"c\",\"f\"],[\"c\",\"g\"],[\"c\",\"h\"],[\"c\",\"i\"],[\"c\",\"j\"],[\"d\",\"e\"],[\"d\",\"f\"],[\"d\",\"g\"],[\"d\",\"h\"],[\"d\",\"i\"],[\"d\",\"j\"],[\"e\",\"f\"],[\"e\",\"g\"],[\"e\",\"h\"],[\"e\",\"i\"],[\"e\",\"j\"],[\"f\",\"g\"],[\"f\",\"h\"],[\"f\",\"i\"],[\"f\",\"j\"],[\"g\",\"h\"],[\"g\",\"i\"],[\"g\",\"j\"],[\"h\",\"i\"],[\"h\",\"j\"],[\"i\",\"j\"]]}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "exact edge set"
+}

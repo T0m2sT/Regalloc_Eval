@@ -1,0 +1,74 @@
+{
+ "anthropic:claude-sonnet-5-5": {
+  "pre1": [
+   {
+    "trial": 0,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 12 vs optimal 12"
+   },
+   {
+    "trial": 1,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 12 vs optimal 12"
+   }
+  ],
+  "pre2": [
+   {
+    "trial": 0,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 20 vs optimal 20"
+   },
+   {
+    "trial": 1,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 20 vs optimal 20"
+   }
+  ],
+  "spill1": [
+   {
+    "trial": 0,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 14 vs optimal 14"
+   },
+   {
+    "trial": 1,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 14 vs optimal 14"
+   }
+  ],
+  "spill2": [
+   {
+    "trial": 0,
+    "score": 0.7777777777777778,
+    "passed": false,
+    "note": "valid, cost 9 vs optimal 7"
+   },
+   {
+    "trial": 1,
+    "score": 0.875,
+    "passed": false,
+    "note": "valid, cost 8 vs optimal 7"
+   }
+  ],
+  "spill3": [
+   {
+    "trial": 0,
+    "score": 0.38461538461538464,
+    "passed": false,
+    "note": "valid, cost 13 vs optimal 5"
+   },
+   {
+    "trial": 1,
+    "score": 1.0,
+    "passed": true,
+    "note": "valid, cost 5 vs optimal 5"
+   }
+  ]
+ }
+}

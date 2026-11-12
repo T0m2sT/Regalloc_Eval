@@ -1,0 +1,20 @@
+{
+ "task": "chroma_grotzsch",
+ "family": "chroma",
+ "aspect": "triangle-free chi=4 core (padded)",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 1,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 480,
+  "output": 6580
+ },
+ "prompt": "Interference graph with 24 live ranges numbered 0..23. Adjacent nodes must get different registers. No spilling is allowed.\nEdges: [[0, 4], [0, 8], [0, 10], [0, 14], [0, 15], [0, 17], [0, 21], [0, 23], [1, 3], [1, 4], [1, 9], [1, 12], [1, 14], [1, 15], [1, 19], [1, 21], [2, 3], [2, 9], [2, 11], [2, 13], [2, 14], [2, 17], [3, 6], [3, 9], [4, 20], [4, 22], [5, 9], [5, 11], [5, 14], [5, 16], [5, 20], [5, 22], [5, 23], [6, 22], [7, 14], [7, 18], [7, 23], [8, 14], [8, 16], [9, 10], [10, 12], [10, 16], [10, 22], [11, 18], [11, 22], [12, 20], [12, 23], [13, 14], [13, 19], [16, 19], [16, 22], [17, 21]]\nFind the MINIMUM number of registers k for which the whole graph can be properly colored, and give such a coloring using colors 0..k-1. End your reply with a single JSON object in a ```json block: {\"k\": <int>, \"coloring\": {\"node\": color, ...}} covering every node. Reporting a k that is not the true minimum fails.",
+ "response": "## Answer: k = 4\n\n**Lower bound (no 3-coloring exists).** Nodes 0, 8, and 14 form a triangle, so they take three distinct colors. Fix 0=0, 14=1, 8=2. Node 16 is adjacent to 8, so it is 0 or 1.\n\n- **16=0:** Node 5 is forced to 2 (adjacent to 14=1 and 16=0). Then 22=1, 10=2, 4=2, 1=0, 9=1, 3=2, and 2=0. Node 11 is adjacent to 2=0, 5=2, and 22=1, so it has no color left.\n- **16=1:** Node 5 is adjacent to 14=1 and 16=1, so it is 0 or 2. Node 10 is forced to 2 and 22 to 0, which forces 5=2. Then 11=1 and 23=1. Node 12 is forced to 0 (adjacent to 10=2 and 23=1). Node 1 must avoid 0 (adjacent to 12), so 1=2, which forces 4=1. Node 20 is adjacent to 4=1, 5=2, and 12=0, so it has no color left.\n\nBoth cases fail, so 3 colors are insufficient and k \u2265 4.\n\n**Upper bound (a 4-coloring).** The following assignment satisfies every edge (checked edge by edge):\n\n- Color 0: 0, 1, 2, 6, 7, 16, 20\n- Color 1: 9, 12, 14, 15, 17, 18, 19, 22\n- Color 2: 3, 4, 5, 8, 10, 13, 21\n- Color 3: 11, 23\n\nSince 3 colors are impossible and 4 suffice, the chromatic number is 4.\n\n```json\n{\"k\": 4, \"coloring\": {\"0\": 0, \"1\": 0, \"2\": 0, \"3\": 2, \"4\": 2, \"5\": 2, \"6\": 0, \"7\": 0, \"8\": 2, \"9\": 1, \"10\": 2, \"11\": 3, \"12\": 1, \"13\": 2, \"14\": 1, \"15\": 1, \"16\": 0, \"17\": 1, \"18\": 1, \"19\": 1, \"20\": 0, \"21\": 2, \"22\": 1, \"23\": 3}}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "k=4 with valid coloring"
+}

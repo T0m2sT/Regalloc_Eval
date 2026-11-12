@@ -1,0 +1,20 @@
+{
+ "task": "live_branchy",
+ "family": "liveness",
+ "aspect": "forward branches, few loops",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 0,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 613,
+  "output": 9591
+ },
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  d = f + 1\n  i = g + c\n  j = h + 1\n  b = 1\n  d = a + h\n  if g goto B1 else B5\nB1:\n  d = g + 1\n  g = j + d\n  j = j + b\n  i = e + 1\n  e = i + e\n  if f goto B2 else B6\nB2:\n  a = c + i\n  a = h + c\n  e = h + j\n  f = c + j\n  h = h + 1\n  if j goto B3 else B5\nB3:\n  d = g + b\n  e = j + c\n  h = h + g\n  e = g + a\n  goto B4\nB4:\n  d = h + 1\n  f = 1\n  f = h + 1\n  i = 1\n  g = 1\n  goto B5\nB5:\n  c = b + 1\n  i = j + 1\n  b = f + 1\n  b = b + 1\n  if d goto B6 else B0\nB6:\n  i = f + 1\n  h = a + f\n  g = c + e\n  ret h\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names.",
+ "response": "## Approach\n\nI computed backward liveness over the CFG, then took each definition's live-after set and added an edge from the defined variable to every other variable in that set.\n\n**Block live-in sets.** Solving the loop to a fixed point gives:\n- LiveIn(B0) = {a, c, e, f, g, h}\n- LiveIn(B1) = {a, b, c, e, f, g, h, j}\n- LiveIn(B2) = {b, c, d, g, h, i, j} \u222a LiveIn(B0)\n- LiveIn(B3) = {a, b, c, g, h, j} \u222a LiveIn(B0)\n- LiveIn(B4) = {a, b, c, e, h, j} \u222a LiveIn(B0)\n- LiveIn(B5) = {a, b, d, e, f, g, h, j}\n- LiveIn(B6) = {a, c, e, f}\n\n**Live-after sets for definitions.** Walking each block backward gives, for example:\n- B0, `d = a+h`: live-after = {a, b, c, d, e, f, g, h, j}, so d interferes with all of these.\n- B1, `i = e+1`: live-after = {a, b, c, d, e, f, g, h, j}, so i interferes with all of these.\n- B6, `i = f+1`: live-after = {a, c, e, f}, so i interferes with a, c, e, f.\n\n**Result.** Collecting the edges from every definition's live-after set, every one of the 10 variables (a\u2013j) interferes with every other, so the graph is the complete graph K10 with 45 edges. The only cross-check that matters here is the back-edge through B5 \u2192 B0, which keeps a, c, e, f, g, h live throughout the loop.\n\n## Edges\n\nAll 45 pairs among {a, b, c, d, e, f, g, h, i, j}.\n\n```json\n{\"edges\": [[\"a\",\"b\"],[\"a\",\"c\"],[\"a\",\"d\"],[\"a\",\"e\"],[\"a\",\"f\"],[\"a\",\"g\"],[\"a\",\"h\"],[\"a\",\"i\"],[\"a\",\"j\"],[\"b\",\"c\"],[\"b\",\"d\"],[\"b\",\"e\"],[\"b\",\"f\"],[\"b\",\"g\"],[\"b\",\"h\"],[\"b\",\"i\"],[\"b\",\"j\"],[\"c\",\"d\"],[\"c\",\"e\"],[\"c\",\"f\"],[\"c\",\"g\"],[\"c\",\"h\"],[\"c\",\"i\"],[\"c\",\"j\"],[\"d\",\"e\"],[\"d\",\"f\"],[\"d\",\"g\"],[\"d\",\"h\"],[\"d\",\"i\"],[\"d\",\"j\"],[\"e\",\"f\"],[\"e\",\"g\"],[\"e\",\"h\"],[\"e\",\"i\"],[\"e\",\"j\"],[\"f\",\"g\"],[\"f\",\"h\"],[\"f\",\"i\"],[\"f\",\"j\"],[\"g\",\"h\"],[\"g\",\"i\"],[\"g\",\"j\"],[\"h\",\"i\"],[\"h\",\"j\"],[\"i\",\"j\"]]}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "exact edge set"
+}

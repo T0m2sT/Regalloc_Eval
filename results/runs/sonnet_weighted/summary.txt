@@ -1,0 +1,32 @@
+## anthropic:claude-sonnet-5-5
+trials: 12 (0 truncated, excluded); dates: ['2026-11-02']
+overall: 12/12 pass, mean score 1.00; pass^k (all trials pass) 100%; tokens in=12662 out=123223
+by family:
+  precolored: 4/4 pass, mean score 1.00
+  spill: 8/8 pass, mean score 1.00
+by aspect:
+  precolored: precolored + interval graph: 1/1 pass, mean score 1.00
+  precolored: precolored + overlapping cliques: 1/1 pass, mean score 1.00
+  precolored: precolored: 3 fixed registers: 1/1 pass, mean score 1.00
+  precolored: precolored: 8 fixed registers, loop costs: 1/1 pass, mean score 1.00
+  spill: interval graph (straight-line code), loop-depth costs: 1/1 pass, mean score 1.00
+  spill: large sparse graph, k=3: 1/1 pass, mean score 1.00
+  spill: overlapping cliques (hitting-set structure): 1/1 pass, mean score 1.00
+  spill: overlapping cliques, hubs expensive: 1/1 pass, mean score 1.00
+  spill: random graph, cost grows with degree: 1/1 pass, mean score 1.00
+  spill: random graph, loop-depth costs (1/10/100), k=5: 1/1 pass, mean score 1.00
+  spill: random graph, skewed (1..32) costs: 1/1 pass, mean score 1.00
+  spill: random graph, uniform costs: 1/1 pass, mean score 1.00
+by task:
+  pre_cliques: 1/1 pass, mean score 1.00
+  pre_few: 1/1 pass, mean score 1.00
+  pre_interval: 1/1 pass, mean score 1.00
+  pre_many: 1/1 pass, mean score 1.00
+  spill_cliques_degree: 1/1 pass, mean score 1.00
+  spill_cliques_uniform: 1/1 pass, mean score 1.00
+  spill_interval_loop: 1/1 pass, mean score 1.00
+  spill_rand_degree: 1/1 pass, mean score 1.00
+  spill_rand_loop: 1/1 pass, mean score 1.00
+  spill_rand_skewed: 1/1 pass, mean score 1.00
+  spill_rand_uniform: 1/1 pass, mean score 1.00
+  spill_sparse_large: 1/1 pass, mean score 1.00

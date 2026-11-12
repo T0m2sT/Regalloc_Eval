@@ -1,0 +1,20 @@
+{
+ "task": "live_loops_dense",
+ "family": "liveness",
+ "aspect": "many back edges, more variables",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 0,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 678,
+  "output": 19963
+ },
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  k = 1\n  h = k + j\n  b = d + j\n  k = l + e\n  if d goto B1 else B3\nB1:\n  g = 1\n  c = i + 1\n  b = 1\n  j = e + h\n  a = c + 1\n  if f goto B2 else B0\nB2:\n  f = c + h\n  e = 1\n  a = b + f\n  f = g + e\n  if b goto B3 else B1\nB3:\n  c = h + d\n  e = h + d\n  b = 1\n  if k goto B4 else B0\nB4:\n  j = k + j\n  d = e + 1\n  h = l + d\n  d = c + i\n  b = 1\n  if k goto B5 else B1\nB5:\n  g = d + 1\n  j = h + e\n  k = a + 1\n  if l goto B6 else B2\nB6:\n  h = c + 1\n  a = b + 1\n  a = j + d\n  j = a + 1\n  if i goto B7 else B1\nB7:\n  c = h + j\n  g = a + b\n  h = i + 1\n  f = 1\n  if d goto B8 else B5\nB8:\n  k = j + b\n  f = 1\n  d = g + c\n  ret f\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names.",
+ "response": "## Approach\n\nI ran backward liveness to a fixed point over the CFG, then, for each defining instruction, added an edge from the defined variable to every variable live immediately after it.\n\n**Observations:**\n- `i` and `l` are never assigned, so they never appear as a defined variable. Edges arise only when another variable is defined while `i` or `l` is live after it. Therefore `i` and `l` interfere with the defined variables but not with each other.\n- Every other variable (a, b, c, d, e, f, g, h, j, k) is defined somewhere and is live together with every other one of these at some definition point. I checked each variable's neighbor set across all blocks and each contains the other nine.\n\n**Result:** The ten assigned variables {a, b, c, d, e, f, g, h, j, k} form a complete graph K10 (45 edges). Variables `i` and `l` each interfere with all ten of them (20 edges), for 65 edges total.\n\n## Interference graph\n\n- K10 on {a, b, c, d, e, f, g, h, j, k}\n- i adjacent to a, b, c, d, e, f, g, h, j, k\n- l adjacent to a, b, c, d, e, f, g, h, j, k\n- No edge between i and l\n\n```json\n{\"edges\": [\n[\"a\",\"b\"],[\"a\",\"c\"],[\"a\",\"d\"],[\"a\",\"e\"],[\"a\",\"f\"],[\"a\",\"g\"],[\"a\",\"h\"],[\"a\",\"j\"],[\"a\",\"k\"],\n[\"b\",\"c\"],[\"b\",\"d\"],[\"b\",\"e\"],[\"b\",\"f\"],[\"b\",\"g\"],[\"b\",\"h\"],[\"b\",\"j\"],[\"b\",\"k\"],\n[\"c\",\"d\"],[\"c\",\"e\"],[\"c\",\"f\"],[\"c\",\"g\"],[\"c\",\"h\"],[\"c\",\"j\"],[\"c\",\"k\"],\n[\"d\",\"e\"],[\"d\",\"f\"],[\"d\",\"g\"],[\"d\",\"h\"],[\"d\",\"j\"],[\"d\",\"k\"],\n[\"e\",\"f\"],[\"e\",\"g\"],[\"e\",\"h\"],[\"e\",\"j\"],[\"e\",\"k\"],\n[\"f\",\"g\"],[\"f\",\"h\"],[\"f\",\"j\"],[\"f\",\"k\"],\n[\"g\",\"h\"],[\"g\",\"j\"],[\"g\",\"k\"],\n[\"h\",\"j\"],[\"h\",\"k\"],\n[\"j\",\"k\"],\n[\"i\",\"a\"],[\"i\",\"b\"],[\"i\",\"c\"],[\"i\",\"d\"],[\"i\",\"e\"],[\"i\",\"f\"],[\"i\",\"g\"],[\"i\",\"h\"],[\"i\",\"j\"],[\"i\",\"k\"],\n[\"l\",\"a\"],[\"l\",\"b\"],[\"l\",\"c\"],[\"l\",\"d\"],[\"l\",\"e\"],[\"l\",\"f\"],[\"l\",\"g\"],[\"l\",\"h\"],[\"l\",\"j\"],[\"l\",\"k\"]\n]}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "exact edge set"
+}

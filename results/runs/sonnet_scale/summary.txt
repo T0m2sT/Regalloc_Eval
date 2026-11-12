@@ -1,0 +1,15 @@
+## anthropic:claude-sonnet-5-5
+trials: 5 (1 truncated, excluded); dates: ['2026-11-02']
+overall: 1/4 pass, mean score 0.55; pass^k (all trials pass) 25%; tokens in=9385 out=136776
+by family:
+  spill: 1/4 pass, mean score 0.55
+by aspect:
+  spill: scale n=56, random, cost grows with degree: 0/1 pass, mean score 0.25
+  spill: scale n=56, random, skewed costs: 0/1 pass, mean score 0.56
+  spill: scale n=56, random, uniform costs: 0/1 pass, mean score 0.40
+  spill: scale n=60, random, loop-depth costs, k=3: 1/1 pass, mean score 1.00
+by task:
+  spill_scale_degree: 0/1 pass, mean score 0.25
+  spill_scale_loop: 1/1 pass, mean score 1.00
+  spill_scale_skewed: 0/1 pass, mean score 0.56
+  spill_scale_uniform: 0/1 pass, mean score 0.40

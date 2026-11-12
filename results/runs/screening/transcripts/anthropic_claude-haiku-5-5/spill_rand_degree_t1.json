@@ -1,0 +1,20 @@
+{
+ "task": "spill_rand_degree",
+ "family": "spill",
+ "aspect": "random graph, cost grows with degree",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 1,
+ "date": "2026-11-02",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 1030,
+  "output": 10588
+ },
+ "prompt": "A compiler's register allocator has this interference graph: 28 live ranges numbered 0..27, and the machine has k=4 registers (colors 0..3). Adjacent nodes must get different colors.\nEdges: [[0, 8], [0, 17], [0, 21], [0, 27], [1, 3], [1, 8], [1, 13], [1, 14], [1, 16], [1, 17], [2, 9], [2, 12], [2, 18], [2, 22], [2, 27], [3, 4], [3, 6], [3, 13], [3, 15], [3, 20], [3, 23], [3, 24], [3, 25], [3, 26], [3, 27], [4, 7], [4, 11], [4, 20], [4, 23], [4, 26], [4, 27], [5, 6], [5, 17], [5, 20], [5, 25], [6, 9], [6, 13], [6, 14], [6, 17], [6, 22], [6, 27], [7, 8], [7, 10], [7, 11], [7, 13], [7, 14], [7, 15], [7, 18], [7, 21], [7, 22], [7, 24], [8, 9], [8, 10], [8, 16], [8, 25], [9, 10], [9, 11], [9, 13], [9, 21], [9, 23], [9, 24], [9, 25], [9, 26], [9, 27], [10, 14], [10, 16], [10, 20], [10, 22], [10, 23], [11, 17], [11, 19], [11, 20], [11, 21], [11, 24], [12, 13], [12, 15], [12, 18], [12, 19], [12, 24], [12, 26], [13, 14], [13, 18], [13, 20], [13, 25], [14, 21], [14, 22], [14, 23], [14, 25], [14, 27], [15, 17], [15, 20], [15, 27], [16, 17], [16, 19], [16, 21], [17, 21], [17, 23], [17, 24], [17, 27], [18, 19], [18, 22], [18, 23], [18, 25], [18, 26], [19, 20], [19, 21], [19, 23], [19, 26], [20, 22], [20, 25], [20, 27], [22, 26], [24, 26]]\nSpill cost per node (index = node): [5, 5, 3, 9, 6, 3, 10, 12, 5, 16, 6, 7, 7, 7, 9, 7, 5, 11, 10, 6, 11, 5, 7, 9, 9, 5, 10, 7]\nChoose which nodes to spill so the remaining nodes can be properly colored with k registers, minimizing the TOTAL spill cost. Optimality is required: any cheaper valid solution beats yours.\nFinal answer: end your reply with a single JSON object in a ```json block: {\"spilled\": [node, ...], \"coloring\": {\"node\": color, ...}}. Spilling a node removes it from the graph entirely. 'coloring' must give a color in 0..k-1 for every non-spilled node (JSON keys are node numbers as strings).",
+ "response": "## Approach\n\nI used a Chaitin-style heuristic: repeatedly remove the node with the lowest spill-cost-to-degree ratio, simplify any node left with fewer than 4 neighbors, then color in reverse order. Where the simplification got stuck, I colored greedily and spilled the node that could not be colored. Finally, I re-inserted the spilled nodes where a color was still free.\n\n**Result:** spill nodes 19, 21, and 25 (costs 6 + 5 + 5 = **16**). All remaining 25 nodes are 4-colored, and I checked every edge against the coloring.\n\nI could not prove this is globally optimal by hand. I tried to recolor the neighborhood of node 25 to free a color for it, and every single-step recoloring was blocked, but I did not exhaust all alternatives. So 16 is the best solution I found, not a verified minimum.\n\n## Verification\n\nI checked every edge in the list against the coloring; none joins two nodes with the same color, and every edge touching a spilled node is excluded.\n\n```json\n{\"spilled\": [19, 21, 25], \"coloring\": {\"0\": 1, \"1\": 1, \"2\": 3, \"3\": 0, \"4\": 1, \"5\": 2, \"6\": 1, \"7\": 3, \"8\": 2, \"9\": 0, \"10\": 1, \"11\": 2, \"12\": 0, \"13\": 2, \"14\": 0, \"15\": 1, \"16\": 3, \"17\": 0, \"18\": 1, \"20\": 3, \"22\": 2, \"23\": 2, \"24\": 1, \"26\": 3, \"27\": 2}}\n```",
+ "score": 0.3125,
+ "passed": false,
+ "note": "valid, cost 16 vs optimal 5"
+}

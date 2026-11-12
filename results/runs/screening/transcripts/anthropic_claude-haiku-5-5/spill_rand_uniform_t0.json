@@ -1,0 +1,20 @@
+{
+ "task": "spill_rand_uniform",
+ "family": "spill",
+ "aspect": "random graph, uniform costs",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 0,
+ "date": "2026-11-02",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 964,
+  "output": 11328
+ },
+ "prompt": "A compiler's register allocator has this interference graph: 26 live ranges numbered 0..25, and the machine has k=4 registers (colors 0..3). Adjacent nodes must get different colors.\nEdges: [[0, 1], [0, 2], [0, 4], [0, 6], [0, 11], [0, 18], [0, 19], [0, 20], [0, 24], [0, 25], [1, 2], [1, 14], [1, 15], [1, 16], [1, 23], [2, 3], [2, 8], [2, 9], [2, 10], [2, 12], [2, 14], [2, 16], [2, 17], [2, 22], [2, 23], [2, 24], [3, 8], [3, 10], [3, 11], [3, 16], [3, 17], [3, 18], [3, 19], [3, 22], [3, 23], [4, 8], [4, 10], [4, 16], [4, 17], [4, 18], [4, 21], [5, 11], [5, 18], [5, 19], [5, 25], [6, 10], [6, 13], [6, 14], [6, 15], [6, 16], [6, 23], [7, 11], [7, 13], [7, 18], [7, 19], [7, 20], [7, 22], [8, 18], [9, 12], [9, 15], [9, 17], [9, 23], [9, 24], [10, 19], [10, 24], [11, 14], [11, 17], [11, 25], [12, 13], [12, 15], [12, 22], [13, 17], [13, 21], [13, 23], [13, 24], [14, 15], [14, 16], [14, 22], [14, 23], [14, 24], [15, 16], [15, 20], [15, 21], [15, 23], [16, 22], [16, 23], [17, 21], [17, 22], [17, 23], [17, 25], [18, 20], [18, 23], [19, 20], [19, 23], [19, 25], [20, 23], [20, 25], [21, 22], [21, 25], [22, 23], [22, 25], [23, 25], [24, 25]]\nSpill cost per node (index = node): [4, 3, 5, 2, 4, 3, 6, 9, 2, 4, 7, 5, 6, 8, 3, 8, 1, 9, 9, 1, 2, 2, 5, 9, 2, 7]\nChoose which nodes to spill so the remaining nodes can be properly colored with k registers, minimizing the TOTAL spill cost. Optimality is required: any cheaper valid solution beats yours.\nFinal answer: end your reply with a single JSON object in a ```json block: {\"spilled\": [node, ...], \"coloring\": {\"node\": color, ...}}. Spilling a node removes it from the graph entirely. 'coloring' must give a color in 0..k-1 for every non-spilled node (JSON keys are node numbers as strings).",
+ "response": "## Result\n\nThe minimum total spill cost is **4**, achieved by spilling nodes 3, 16, and 19.\n\n## Reasoning\n\n**Lower bound.** Several 5-cliques force spills:\n- {2, 3, 16, 22, 23} and {2, 3, 17, 22, 23} both contain node 3 (cost 2). Without spilling 3, you would need to spill one of 2, 22, 23 or 17, each costing at least 5.\n- {1, 14, 15, 16, 23} and {6, 14, 15, 16, 23} are both hit by spilling 16 (cost 1).\n\nSo 3 and 16 must be spilled, for a cost of 3. Spilling only 3 and 16 leaves the graph uncolorable: with 23 and 0 forced to share a color, the chain of forced colors makes node 24 (adjacent to colors of 2, 9, 13, 14, 25 and 0) impossible. The only other cost-1 node is 19, so the cheapest completion is 3 + 16 + 19 = 4.\n\n**Construction.** Spilling {3, 16, 19} leaves a graph that I colored with 4 colors. The coloring is:\n- Color 0: 8, 11, 12, 21, 23, 24\n- Color 1: 0, 7, 10, 14, 17\n- Color 2: 1, 4, 5, 6, 9, 20, 22\n- Color 3: 2, 13, 15, 18, 25\n\nI checked every remaining edge against this assignment, and each has endpoints with different colors.\n\n```json\n{\"spilled\": [3, 16, 19], \"coloring\": {\"0\": 1, \"1\": 2, \"2\": 3, \"4\": 2, \"5\": 2, \"6\": 2, \"7\": 1, \"8\": 0, \"9\": 2, \"10\": 1, \"11\": 0, \"12\": 0, \"13\": 3, \"14\": 1, \"15\": 3, \"17\": 1, \"18\": 3, \"20\": 2, \"21\": 0, \"22\": 2, \"23\": 0, \"24\": 0, \"25\": 3}}\n```",
+ "score": 1.0,
+ "passed": true,
+ "note": "valid, cost 4 vs optimal 4"
+}

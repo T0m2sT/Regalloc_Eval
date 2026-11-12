@@ -1,0 +1,20 @@
+{
+ "task": "live_long",
+ "family": "liveness",
+ "aspect": "long program, 12 blocks",
+ "model": "anthropic:claude-haiku-5-5",
+ "trial": 0,
+ "date": "2026-11-01",
+ "temperature": 1.0,
+ "finish_reason": "end_turn",
+ "truncated": false,
+ "usage": {
+  "input": 887,
+  "output": 19085
+ },
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  a = 1\n  c = j + h\n  l = d + 1\n  b = 1\n  if h goto B1 else B9\nB1:\n  e = l + 1\n  f = i + h\n  g = i + j\n  l = 1\n  if e goto B2 else B0\nB2:\n  e = j + b\n  h = f + 1\n  f = 1\n  a = 1\n  h = 1\n  if i goto B3 else B8\nB3:\n  i = l + a\n  b = i + l\n  j = k + c\n  i = 1\n  goto B4\nB4:\n  e = a + f\n  h = a + j\n  c = k + 1\n  h = 1\n  i = 1\n  f = j + 1\n  if j goto B5 else B1\nB5:\n  f = j + 1\n  e = b + h\n  l = i + 1\n  e = 1\n  b = f + d\n  if j goto B6 else B8\nB6:\n  h = a + c\n  l = 1\n  i = f + 1\n  e = e + b\n  if a goto B7 else B5\nB7:\n  g = d + 1\n  e = 1\n  c = 1\n  b = 1\n  a = k + d\n  i = 1\n  if g goto B8 else B1\nB8:\n  k = 1\n  i = 1\n  f = 1\n  j = c + 1\n  a = 1\n  goto B9\nB9:\n  d = j + 1\n  f = g + 1\n  j = l + h\n  f = d + 1\n  k = i + 1\n  i = c + 1\n  if g goto B10 else B4\nB10:\n  b = 1\n  h = b + d\n  a = 1\n  b = 1\n  a = h + a\n  k = h + 1\n  if g goto B11 else B3\nB11:\n  b = 1\n  e = f + 1\n  c = l + c\n  h = i + b\n  a = 1\n  f = 1\n  ret a\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names.",
+ "response": "The interference graph is complete on all 12 variables, so it has 66 edges. Liveness reaches a fixed point after three passes. Each block's live-out set is then used to walk its instructions backward, and every definition is paired with the variables live immediately after it.\n\nTwo checks support the result. The liveness equations are stable at the fixed point, and each block's backward walk reproduces its computed live-in set.\n\n```json\n{\"edges\": [\n[\"a\",\"b\"],[\"a\",\"c\"],[\"a\",\"d\"],[\"a\",\"e\"],[\"a\",\"f\"],[\"a\",\"g\"],[\"a\",\"h\"],[\"a\",\"i\"],[\"a\",\"j\"],[\"a\",\"k\"],[\"a\",\"l\"],\n[\"b\",\"c\"],[\"b\",\"d\"],[\"b\",\"e\"],[\"b\",\"f\"],[\"b\",\"g\"],[\"b\",\"h\"],[\"b\",\"i\"],[\"b\",\"j\"],[\"b\",\"k\"],[\"b\",\"l\"],\n[\"c\",\"d\"],[\"c\",\"e\"],[\"c\",\"f\"],[\"c\",\"g\"],[\"c\",\"h\"],[\"c\",\"i\"],[\"c\",\"j\"],[\"c\",\"k\"],[\"c\",\"l\"],\n[\"d\",\"e\"],[\"d\",\"f\"],[\"d\",\"g\"],[\"d\",\"h\"],[\"d\",\"i\"],[\"d\",\"j\"],[\"d\",\"k\"],[\"d\",\"l\"],\n[\"e\",\"f\"],[\"e\",\"g\"],[\"e\",\"h\"],[\"e\",\"i\"],[\"e\",\"j\"],[\"e\",\"k\"],[\"e\",\"l\"],\n[\"f\",\"g\"],[\"f\",\"h\"],[\"f\",\"i\"],[\"f\",\"j\"],[\"f\",\"k\"],[\"f\",\"l\"],\n[\"g\",\"h\"],[\"g\",\"i\"],[\"g\",\"j\"],[\"g\",\"k\"],[\"g\",\"l\"],\n[\"h\",\"i\"],[\"h\",\"j\"],[\"h\",\"k\"],[\"h\",\"l\"],\n[\"i\",\"j\"],[\"i\",\"k\"],[\"i\",\"l\"],\n[\"j\",\"k\"],[\"j\",\"l\"],\n[\"k\",\"l\"]\n]}\n```",
+ "score": 1,
+ "passed": true,
+ "note": "exact edge set"
+}

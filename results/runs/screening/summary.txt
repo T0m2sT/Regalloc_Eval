@@ -1,0 +1,70 @@
+## anthropic:claude-haiku-5-5
+trials: 60 (7 truncated, excluded); dates: ['2026-11-01', '2026-11-02']
+overall: 38/53 pass, mean score 0.90; pass^k (all trials pass) 59%; tokens in=52454 out=753231
+by family:
+  chroma: 4/4 pass, mean score 1.00
+  liveness: 8/9 pass, mean score 1.00
+  pipeline: 7/8 pass, mean score 0.97
+  precolored: 3/7 pass, mean score 0.89
+  spill: 6/15 pass, mean score 0.72
+  trap: 10/10 pass, mean score 1.00
+by aspect:
+  chroma: dense planted 4-partite, chi=4: 2/2 pass, mean score 1.00
+  chroma: triangle-free chi=4 core (padded): 2/2 pass, mean score 1.00
+  liveness: forward branches, few loops: 2/2 pass, mean score 1.00
+  liveness: long program, 12 blocks: 1/1 pass, mean score 1.00
+  liveness: many back edges: 2/2 pass, mean score 1.00
+  liveness: many back edges, more variables: 2/2 pass, mean score 1.00
+  liveness: single long basic block: 1/2 pass, mean score 0.99
+  pipeline: IR forward branches, uniform costs: 2/2 pass, mean score 1.00
+  pipeline: IR with loops, cost grows with degree: 1/2 pass, mean score 0.87
+  pipeline: IR with loops, loop-depth costs: 2/2 pass, mean score 1.00
+  pipeline: bigger IR, skewed costs: 2/2 pass, mean score 1.00
+  precolored: precolored + interval graph: 1/2 pass, mean score 0.94
+  precolored: precolored + overlapping cliques: 0/1 pass, mean score 0.86
+  precolored: precolored: 3 fixed registers: 1/2 pass, mean score 0.77
+  precolored: precolored: 8 fixed registers, loop costs: 1/2 pass, mean score 0.98
+  spill: interval graph (straight-line code), loop-depth costs: 1/2 pass, mean score 0.94
+  spill: large sparse graph, k=3: 0/1 pass, mean score 0.26
+  spill: overlapping cliques (hitting-set structure): 2/2 pass, mean score 1.00
+  spill: overlapping cliques, hubs expensive: 1/2 pass, mean score 0.82
+  spill: random graph, cost grows with degree: 0/2 pass, mean score 0.41
+  spill: random graph, loop-depth costs (1/10/100), k=5: 0/2 pass, mean score 0.69
+  spill: random graph, skewed (1..32) costs: 0/2 pass, mean score 0.44
+  spill: random graph, uniform costs: 2/2 pass, mean score 1.00
+  trap: planted k=4, barely uncolorable: 1/1 pass, mean score 1.00
+  trap: planted k=4, colorable: 2/2 pass, mean score 1.00
+  trap: planted k=5, barely uncolorable: 1/1 pass, mean score 1.00
+  trap: triangle-free core minus one edge, colorable: 2/2 pass, mean score 1.00
+  trap: triangle-free uncolorable core (no small clique): 2/2 pass, mean score 1.00
+  trap: triangle-free uncolorable core, more padding: 2/2 pass, mean score 1.00
+by task:
+  chroma_grotzsch: 2/2 pass, mean score 1.00
+  chroma_planted: 2/2 pass, mean score 1.00
+  live_branchy: 2/2 pass, mean score 1.00
+  live_long: 1/1 pass, mean score 1.00
+  live_loops: 2/2 pass, mean score 1.00
+  live_loops_dense: 2/2 pass, mean score 1.00
+  live_straight: 1/2 pass, mean score 0.99
+  pipe_branchy_uniform: 2/2 pass, mean score 1.00
+  pipe_dense_skewed: 2/2 pass, mean score 1.00
+  pipe_loops_degree: 1/2 pass, mean score 0.87
+  pipe_loops_loopcost: 2/2 pass, mean score 1.00
+  pre_cliques: 0/1 pass, mean score 0.86
+  pre_few: 1/2 pass, mean score 0.77
+  pre_interval: 1/2 pass, mean score 0.94
+  pre_many: 1/2 pass, mean score 0.98
+  spill_cliques_degree: 1/2 pass, mean score 0.82
+  spill_cliques_uniform: 2/2 pass, mean score 1.00
+  spill_interval_loop: 1/2 pass, mean score 0.94
+  spill_rand_degree: 0/2 pass, mean score 0.41
+  spill_rand_loop: 0/2 pass, mean score 0.69
+  spill_rand_skewed: 0/2 pass, mean score 0.44
+  spill_rand_uniform: 2/2 pass, mean score 1.00
+  spill_sparse_large: 0/1 pass, mean score 0.26
+  trap_grotzsch_no: 2/2 pass, mean score 1.00
+  trap_grotzsch_no_big: 2/2 pass, mean score 1.00
+  trap_grotzsch_yes: 2/2 pass, mean score 1.00
+  trap_planted_k5_no: 1/1 pass, mean score 1.00
+  trap_planted_no: 1/1 pass, mean score 1.00
+  trap_planted_yes: 2/2 pass, mean score 1.00

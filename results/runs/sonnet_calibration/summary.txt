@@ -1,0 +1,11 @@
+## anthropic:claude-sonnet-5-5
+trials: 2 (0 truncated, excluded); dates: ['2026-11-02']
+overall: 2/2 pass, mean score 1.00; pass^k (all trials pass) 100%; tokens in=2036 out=18024
+by family:
+  spill: 2/2 pass, mean score 1.00
+by aspect:
+  spill: random graph, cost grows with degree: 1/1 pass, mean score 1.00
+  spill: random graph, skewed (1..32) costs: 1/1 pass, mean score 1.00
+by task:
+  spill_rand_degree: 1/1 pass, mean score 1.00
+  spill_rand_skewed: 1/1 pass, mean score 1.00
