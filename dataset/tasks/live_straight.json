@@ -1,0 +1,6 @@
+{
+ "id": "live_straight",
+ "family": "liveness",
+ "aspect": "single long basic block",
+ "prompt": "Below is a function in a simple three-address IR (no memory, no calls; every instruction is 'x = y + z', 'x = y + <constant>', 'x = <constant>', or a block terminator; there are no plain copies; a variable may be read before any assignment on some path, just run the dataflow). Compute its register interference graph.\n\nB0:\n  d = i + 1\n  f = h + 1\n  a = a + 1\n  a = 1\n  c = 1\n  j = e + 1\n  f = i + d\n  j = j + 1\n  g = 1\n  i = 1\n  c = c + h\n  h = i + f\n  e = d + b\n  a = c + f\n  f = g + d\n  c = 1\n  b = 1\n  c = 1\n  c = 1\n  b = f + b\n  e = 1\n  j = 1\n  h = 1\n  a = e + 1\n  ret c\n\nRule: variables x and y interfere iff at some instruction that DEFINES x, y is live immediately after that instruction (y != x), or vice versa. Liveness is the standard backward dataflow over the whole CFG, including loops. A definition whose value is never used still interferes with every variable live after it. Terminators (goto / if / ret) define nothing; 'if c' and 'ret v' use their operand.\nEnd your reply with a single JSON object in a ```json block: {\"edges\": [[\"a\",\"b\"], ...]} listing each interfering pair once, using the variable names."
+}

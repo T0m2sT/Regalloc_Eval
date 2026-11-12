@@ -1,0 +1,6 @@
+{
+ "id": "chroma_grotzsch",
+ "family": "chroma",
+ "aspect": "triangle-free chi=4 core (padded)",
+ "prompt": "Interference graph with 24 live ranges numbered 0..23. Adjacent nodes must get different registers. No spilling is allowed.\nEdges: [[0, 4], [0, 8], [0, 10], [0, 14], [0, 15], [0, 17], [0, 21], [0, 23], [1, 3], [1, 4], [1, 9], [1, 12], [1, 14], [1, 15], [1, 19], [1, 21], [2, 3], [2, 9], [2, 11], [2, 13], [2, 14], [2, 17], [3, 6], [3, 9], [4, 20], [4, 22], [5, 9], [5, 11], [5, 14], [5, 16], [5, 20], [5, 22], [5, 23], [6, 22], [7, 14], [7, 18], [7, 23], [8, 14], [8, 16], [9, 10], [10, 12], [10, 16], [10, 22], [11, 18], [11, 22], [12, 20], [12, 23], [13, 14], [13, 19], [16, 19], [16, 22], [17, 21]]\nFind the MINIMUM number of registers k for which the whole graph can be properly colored, and give such a coloring using colors 0..k-1. End your reply with a single JSON object in a ```json block: {\"k\": <int>, \"coloring\": {\"node\": color, ...}} covering every node. Reporting a k that is not the true minimum fails."
+}
